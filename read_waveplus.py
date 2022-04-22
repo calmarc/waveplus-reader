@@ -33,6 +33,7 @@ import datetime
 import struct
 import tableprint
 
+
 # ===============================
 # Script guards for correct usage
 # ===============================
@@ -219,7 +220,7 @@ try:
     while True:
 
         # print headers each 12 lines
-        if num_printed % 36 == 0:
+        if num_printed % 24 == 0:
             
             if (Mode=='terminal'):
                 #if tot_retries > 0:
@@ -249,30 +250,45 @@ try:
         sensors = waveplus.read()
         
         # extract
-        mytime     = datetime.datetime.now().strftime("%H:%M ")
+        if num_printed % 24 == 1:
+            mytime     = datetime.datetime.now().strftime("(%S) %H:%M ")
+        else:
+            mytime = datetime.datetime.now().strftime("%H:%M ")
+
         if tot_retries > 0:
             mytime     = "#" + str(tot_retries) + "  " + mytime
             tot_retries = 0
 
-        CO2_lvl      = str("{:.0f}".format(sensors.getValue(SENSOR_IDX_CO2_LVL)))              + " " + str(sensors.getUnit(SENSOR_IDX_CO2_LVL)) + " "
-        VOC_lvl      = str("{:.0f}".format(sensors.getValue(SENSOR_IDX_VOC_LVL)))              + " " + str(sensors.getUnit(SENSOR_IDX_VOC_LVL)) + " "
-        temperature  = str("{:.1f}".format(sensors.getValue(SENSOR_IDX_TEMPERATURE)))          + " " + str(sensors.getUnit(SENSOR_IDX_TEMPERATURE)) + " "
+        CO2_lvl_file = str("{:.0f}".format(sensors.getValue(SENSOR_IDX_CO2_LVL)))
+        CO2_lvl      = CO2_lvl_file                                                            + " " + str(sensors.getUnit(SENSOR_IDX_CO2_LVL)) + " "
+        VOC_lvl_file = str("{:.0f}".format(sensors.getValue(SENSOR_IDX_VOC_LVL)))
+        VOC_lvl      = VOC_lvl_file                                                            + " " + str(sensors.getUnit(SENSOR_IDX_VOC_LVL)) + " "
+        temperature_file  = str("{:.1f}".format(sensors.getValue(SENSOR_IDX_TEMPERATURE)))
+        temperature  = temperature_file                                                        + " " + str(sensors.getUnit(SENSOR_IDX_TEMPERATURE)) + " "
         humidity     = str("{:.1f}".format(sensors.getValue(SENSOR_IDX_HUMIDITY)))             + " " + str(sensors.getUnit(SENSOR_IDX_HUMIDITY)) + " "
         pressure     = str("{:.0f}".format(sensors.getValue(SENSOR_IDX_REL_ATM_PRESSURE)))     + " " + str(sensors.getUnit(SENSOR_IDX_REL_ATM_PRESSURE)) + " "
         radon_st_avg = str("{:.0f}".format(sensors.getValue(SENSOR_IDX_RADON_SHORT_TERM_AVG))) + " " + str(sensors.getUnit(SENSOR_IDX_RADON_SHORT_TERM_AVG)) + " "
         radon_lt_avg = str("{:.0f}".format(sensors.getValue(SENSOR_IDX_RADON_LONG_TERM_AVG)))  + " " + str(sensors.getUnit(SENSOR_IDX_RADON_LONG_TERM_AVG)) + " "
-        
+
+
         # Print data
         data = [mytime, CO2_lvl, VOC_lvl, temperature, humidity, pressure, radon_st_avg, radon_lt_avg]
-        
         if (Mode=='terminal'):
             print (tableprint.row(data, width=14, style="clean"))
+            # into file - so dwmstatus can read from it and put it up.
+            try:
+                with open("/tmp/airthings.tmp.txt", "w") as f:
+                    f.write(temperature_file + "°C"  + " CO2:" + CO2_lvl_file + " VOC:" + VOC_lvl_file)
+                    f.close
+            except:
+                pass
+
         elif (Mode=='pipe'):
             print (data)
-        
+
         waveplus.disconnect()
-        
+
         time.sleep(SamplePeriod)
-            
+
 finally:
     waveplus.disconnect()
