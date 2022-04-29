@@ -25,6 +25,9 @@
 # ===============================
 # Module import dependencies
 # ===============================
+#
+#
+
 
 from bluepy.btle import UUID, Peripheral, Scanner, DefaultDelegate
 import sys
@@ -33,6 +36,24 @@ import datetime
 import struct
 import tableprint
 
+bash_red='\033[0;31m'
+bash_black='\033[0;30m'
+bash_dark_gray='\033[1;30m'
+bash_red='\033[0;31m'
+bash_light_red='\033[1;31m'
+bash_green='\033[0;32m'
+bash_light_green='\033[1;32m'
+bash_brown_orange='\033[0;33m'
+bash_yellow='\033[1;33m'
+bash_blue='\033[0;34m'
+bash_light_blue='\033[1;34m'
+bash_purple='\033[0;35m'
+bash_light_purple='\033[1;35m'
+bash_cyan='\033[0;36m'
+bash_light_cyan='\033[1;36m'
+bash_light_gray='\033[0;37m'
+bash_white='\033[1;37m'
+bash_nc='\033[0m' # No Color
 
 # ===============================
 # Script guards for correct usage
@@ -174,7 +195,7 @@ class Sensors():
     def __init__(self):
         self.sensor_version = None
         self.sensor_data    = [None]*NUMBER_OF_SENSORS
-        self.sensor_units   = ["%rH", "Bq/m3", "Bq/m3", "C", "hPa", "ppm", "ppb"]
+        self.sensor_units   = ["%rH", "Bq/m3", "Bq/m3", "°C", "hPa", "ppm", "ppb"]
     
     def set(self, rawData):
         self.sensor_version = rawData[0]
@@ -260,15 +281,15 @@ try:
             tot_retries = 0
 
         CO2_lvl_file = str("{:.0f}".format(sensors.getValue(SENSOR_IDX_CO2_LVL)))
-        CO2_lvl      = CO2_lvl_file                                                            + " " + str(sensors.getUnit(SENSOR_IDX_CO2_LVL)) + " "
+        CO2_lvl      = bash_light_green + CO2_lvl_file + " " + str(sensors.getUnit(SENSOR_IDX_CO2_LVL)) + " " + bash_nc
         VOC_lvl_file = str("{:.0f}".format(sensors.getValue(SENSOR_IDX_VOC_LVL)))
-        VOC_lvl      = VOC_lvl_file                                                            + " " + str(sensors.getUnit(SENSOR_IDX_VOC_LVL)) + " "
+        VOC_lvl      = bash_dark_gray + VOC_lvl_file + " " + str(sensors.getUnit(SENSOR_IDX_VOC_LVL)) + " " + bash_nc
         temperature_file  = str("{:.1f}".format(sensors.getValue(SENSOR_IDX_TEMPERATURE)))
-        temperature  = temperature_file                                                        + " " + str(sensors.getUnit(SENSOR_IDX_TEMPERATURE)) + " "
-        humidity     = str("{:.1f}".format(sensors.getValue(SENSOR_IDX_HUMIDITY)))             + " " + str(sensors.getUnit(SENSOR_IDX_HUMIDITY)) + " "
-        pressure     = str("{:.0f}".format(sensors.getValue(SENSOR_IDX_REL_ATM_PRESSURE)))     + " " + str(sensors.getUnit(SENSOR_IDX_REL_ATM_PRESSURE)) + " "
-        radon_st_avg = str("{:.0f}".format(sensors.getValue(SENSOR_IDX_RADON_SHORT_TERM_AVG))) + " " + str(sensors.getUnit(SENSOR_IDX_RADON_SHORT_TERM_AVG)) + " "
-        radon_lt_avg = str("{:.0f}".format(sensors.getValue(SENSOR_IDX_RADON_LONG_TERM_AVG)))  + " " + str(sensors.getUnit(SENSOR_IDX_RADON_LONG_TERM_AVG)) + " "
+        temperature  = bash_light_red + temperature_file + " " + str(sensors.getUnit(SENSOR_IDX_TEMPERATURE)) + " " + bash_nc
+        humidity     = bash_light_cyan + str("{:.1f}".format(sensors.getValue(SENSOR_IDX_HUMIDITY)))  + " " + str(sensors.getUnit(SENSOR_IDX_HUMIDITY)) + " " + bash_nc
+        pressure     = bash_brown_orange + str("{:.0f}".format(sensors.getValue(SENSOR_IDX_REL_ATM_PRESSURE)))     + " " + str(sensors.getUnit(SENSOR_IDX_REL_ATM_PRESSURE)) + " " + bash_nc
+        radon_st_avg = bash_green + str("{:.0f}".format(sensors.getValue(SENSOR_IDX_RADON_SHORT_TERM_AVG))) + " " + str(sensors.getUnit(SENSOR_IDX_RADON_SHORT_TERM_AVG)) + " " + bash_nc
+        radon_lt_avg = bash_green + str("{:.0f}".format(sensors.getValue(SENSOR_IDX_RADON_LONG_TERM_AVG)))  + " " + str(sensors.getUnit(SENSOR_IDX_RADON_LONG_TERM_AVG)) + " " + bash_nc
 
 
         # Print data
